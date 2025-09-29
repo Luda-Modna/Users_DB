@@ -1,4 +1,7 @@
 'use strict';
+
+const { GENDERS } = require('./../constants');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
@@ -30,7 +33,7 @@ module.exports = {
         type: Sequelize.DATEONLY,
       },
       gender: {
-        type: Sequelize.ENUM('male','female','other'),
+        type: Sequelize.ENUM(...GENDERS),
       },
       image: {
         type: Sequelize.STRING,
