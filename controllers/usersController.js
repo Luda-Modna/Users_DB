@@ -43,6 +43,61 @@ module.exports.getUser = async (req, res, next) => {
     next(err);
   }
 };
-module.exports.getUserById = async (req, res, next) => {};
-module.exports.updateUserById = async (req, res, next) => {};
-module.exports.deleteUserById = async (req, res, next) => {};
+
+module.exports.getUserById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const foundUserById = await User.findByPk(id, {
+      raw: true,
+      attributes: { exclude: ['passwHash', 'createdAt', 'updatedAt'] },
+    });
+    if (!foundUserById) {
+      return res.status(404).send({ status: 404, message: 'User not found' });
+    }
+    res.status(200).send({ data: foundUserById });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.updateUserById = async (req, res, next) => {
+  const {
+    body,
+    params: { id },
+  } = req;
+
+  try {
+    body.passwHash = hashSync(body.passwHash, HASH_SALT);
+    const [updatedUsersCount, [updatedUser]] = await User.update(body, {
+      where: { id },
+      raw: true,
+      returning: true,
+    });
+
+    if (!updatedUsersCount) {
+      return res.status(404).send([{ status: 404, title: 'User not found' }]);
+    }
+    const preparedUser = _.omit(updatedUser, [
+      'passwHash',
+      'createdAt',
+      'updatedAt',
+    ]);
+
+    res.status(200).send({ data: preparedUser });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.deleteUserById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const deletedUserCount = await User.destroy({ where: { id } });
+    if (!deletedUserCount) {
+      return res.status(404).end();
+    }
+    res.status(204).send({ data: deletedUserCount });
+  } catch (err) {
+    next(err);
+  }
+};
