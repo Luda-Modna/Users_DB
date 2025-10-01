@@ -9,3 +9,7 @@ Content-Type: application/json
     "birthday":"2010-09-11",
     "gender":"male"
 }
+
+GET http://localhost:5000/api/users
+
+GET http://localhost:5000/api/users?page=2&results=2
