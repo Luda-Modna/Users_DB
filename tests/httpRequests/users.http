@@ -24,3 +24,15 @@ Content-Type: application/json
 {
     "lastName":"New"
 }
+
+PUT http://localhost:5000/api/users/50
+Content-Type: application/json
+
+{
+  "firstName":"Jane",
+  "lastName": "Dou",
+  "email":"m10@m.com",
+  "passwHash": "123",
+  "birthday":"1990-12-01",
+  "gender":"female"    
+}
