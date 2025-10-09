@@ -1,24 +1,40 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+const { underscoredIf } = require('sequelize/lib/utils');
+
 module.exports = (sequelize, DataTypes) => {
-  class task extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+  class Task extends Model {
+    static associate (models) {
+      Task.belongsTo(models.User, {
+        foreignKey: {
+          name: 'userId',
+        },
+      });
     }
   }
-  task.init({
-    body: DataTypes.STRING,
-    deadline: DataTypes.DATEONLY
-  }, {
-    sequelize,
-    modelName: 'task',
-  });
-  return task;
+  Task.init(
+    {
+      body: {
+        name: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          not: /^$/,
+        },
+      },
+      deadline: {
+        type: DataTypes.DATEONLY,
+        validate: {
+          isAfter: new Date(
+            new Date().setDate(new Date().getDate() - 1)
+          ).toISOString(),
+        },
+      },
+    },
+    {
+      sequelize,
+      underscored: true,
+      modelName: 'Task',
+    }
+  );
+  return Task;
 };
