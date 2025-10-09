@@ -127,3 +127,22 @@ module.exports.deleteUserById = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.getUserTasks = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const foundUser = await User.findByPk(id);
+    if (!foundUser) {
+      return res.status(404).end();
+    }
+
+    const foundUserTasks = await foundUser.getTasks({
+      raw: true,
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+
+    res.status(200).send({ data: foundUserTasks });
+  } catch (err) {
+    next(err);
+  }
+};
