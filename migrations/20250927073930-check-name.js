@@ -9,7 +9,7 @@ module.exports = {
       fields: ['first_name'],
       type: 'check',
       name: 'first_name_check',
-      where: { first_name: { [Op.regexp]: '/^[A-Z][a-z]{1,63}$/' } },
+      where: { first_name: { [Sequelize.Op.regexp]: '^[A-Z][a-z]+$' } },
     });
   },
 
