@@ -18,6 +18,10 @@ usersRouter
 
 usersRouter.route('/:id/tasks').get(usersController.getUserTasks);
 
-usersRouter.patch('/:id/images', upload.uploadUserPhoto);
+usersRouter.patch(
+  '/:id/images',
+  upload.uploadUserPhoto,
+  usersController.updateUserImage
+);
 
 module.exports = usersRouter;

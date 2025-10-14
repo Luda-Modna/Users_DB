@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const { User } = require('../db/models');
+const { where } = require('sequelize');
 
 module.exports.createUser = async (req, res, next) => {
   const { body } = req;
@@ -142,6 +143,37 @@ module.exports.getUserTasks = async (req, res, next) => {
     });
 
     res.status(200).send({ data: foundUserTasks });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.updateUserImage = async (req, res, next) => {
+  const {
+    file: { filename },
+    params: { id },
+  } = req;
+
+  try {
+    const [updatedUserCount, [updatedUser]] = await User.update(
+      {
+        image: filename,
+      },
+      { where: { id: id }, raw: true, returning: true }
+    );
+
+    if (!updatedUserCount) {
+      return res.status(404).send({ status: 404, message: 'User not found' });
+    }
+
+    const preparedUser = _.omit(updatedUser, [
+      'passwHash',
+      'createdAt',
+      'updatedAt',
+    ]);
+
+    res.status(200).send(preparedUser);
+
   } catch (err) {
     next(err);
   }
