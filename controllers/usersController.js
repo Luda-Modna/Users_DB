@@ -150,14 +150,19 @@ module.exports.getUserTasks = async (req, res, next) => {
 
 module.exports.updateUserImage = async (req, res, next) => {
   const {
-    file: { filename },
+    file,
     params: { id },
   } = req;
 
   try {
+    if (!file) {
+      return res
+        .status(422)
+        .send({ status: 422, message: 'Image is required' });
+    }
     const [updatedUserCount, [updatedUser]] = await User.update(
       {
-        image: filename,
+        image: file.filename,
       },
       { where: { id: id }, raw: true, returning: true }
     );
@@ -173,7 +178,6 @@ module.exports.updateUserImage = async (req, res, next) => {
     ]);
 
     res.status(200).send(preparedUser);
-
   } catch (err) {
     next(err);
   }
